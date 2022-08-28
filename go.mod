@@ -2,7 +2,16 @@ module go-demo-1
 
 go 1.18
 
-require github.com/cosmos/cosmos-sdk v0.45.5
+require (
+	github.com/cosmos/cosmos-sdk v0.45.5
+	github.com/pingcap/types v0.0.0-00010101000000-000000000000
+)
+
+require (
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.4 // indirect
+)
 
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
@@ -50,6 +59,7 @@ require (
 	github.com/prometheus/common v0.32.1 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
+	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/afero v1.8.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/cobra v1.4.0 // indirect
@@ -73,10 +83,14 @@ require (
 	gopkg.in/ini.v1 v1.66.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/driver/mysql v1.3.2
+	gorm.io/gorm v1.23.2
 )
 
 replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
+	github.com/pingcap/types => ./lib/github.com/pingcap/types
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+	gorm.io/gorm => github.com/go-gorm/gorm v1.23.2
 )
