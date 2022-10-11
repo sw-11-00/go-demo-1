@@ -2,10 +2,12 @@ package router
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"go-demo-1/handler"
 	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
+
+	"go-demo-1/handler"
 )
 
 func Init() {
@@ -73,7 +75,7 @@ func getCurrentPath() string {
 }
 
 func PrintMiddleware(context *gin.Context) {
-	fmt.Print("before request")
+	fmt.Print("before http")
 	context.Next()
 }
 
