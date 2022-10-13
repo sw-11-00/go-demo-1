@@ -4,16 +4,20 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/machinebox/graphql"
 	"github.com/sirupsen/logrus"
 
-	"go-demo-1/util/math"
+	_ "go-demo-1/util/math"
 )
 
+var timeDeltaTmp = strconv.FormatInt(time.Now().Unix()-60*60, 10)
+
 type PoolOperate struct {
-	charge   []*math.Decimal
-	withdraw []*math.Decimal
+	charges   []string
+	withdraws []string
 }
 
 type PoolDepositResp struct {
@@ -52,27 +56,35 @@ func main() {
 
 func PoolOperateCall(poolAddress string) (*PoolOperate, error) {
 	client = graphql.NewClient("http://localhost:8000/subgraphs/name/perpetual/spidex")
-	poolDeposits, err := poolDeposit(poolAddress)
+	poolDeposits, err := poolDeposit(poolAddress, timeDeltaTmp)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
-	fmt.Println(poolDeposits)
+	var charges []string
+	for _, val := range poolDeposits.PoolCreateEntities {
+		charges = append(charges, val.Amount)
+	}
 
-	poolWithdraws, err := poolWithdraw(poolAddress)
+	poolWithdraws, err := poolWithdraw(poolAddress, timeDeltaTmp)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
-	fmt.Println(poolWithdraws)
-
-	return nil, nil
+	var withdraws []string
+	for _, val := range poolWithdraws.PoolWithdrawEntities {
+		withdraws = append(withdraws, val.Amount)
+	}
+	return &PoolOperate{
+		charges,
+		withdraws,
+	}, nil
 }
 
-func poolDeposit(poolAddress string) (*math.Decimal, error) {
+func poolDeposit(poolAddress string, timeDelta string) (*PoolDepositResp, error) {
 	query := graphql.NewRequest(`
 		{
-  			poolDepositEntities(where: {poolAddr: "` + poolAddress + `"}) {
+  			poolDepositEntities(where: {poolAddr: "` + poolAddress + `", timestamp_gt: "` + timeDelta + `"}) {
     			timestamp
     			share
     			userAddr
@@ -88,13 +100,13 @@ func poolDeposit(poolAddress string) (*math.Decimal, error) {
 		log.Fatal(err)
 	}
 
-	return nil, nil
+	return &poolDepositResp, nil
 }
 
-func poolWithdraw(poolAddress string) (*math.Decimal, error) {
+func poolWithdraw(poolAddress string, timeDelta string) (*PoolWithdrawResp, error) {
 	query := graphql.NewRequest(`
 		{
-			poolWithdrawEntities(where: {poolAddr: "` + poolAddress + `"}){
+			poolWithdrawEntities(where: {poolAddr: "` + poolAddress + `", timestamp_gt: "` + timeDelta + `"}){
     			share
     			timestamp
     			userAddr
@@ -110,5 +122,5 @@ func poolWithdraw(poolAddress string) (*math.Decimal, error) {
 		log.Fatal(err)
 	}
 
-	return nil, nil
+	return &poolWithdrawResp, nil
 }
